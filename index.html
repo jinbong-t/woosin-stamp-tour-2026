@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>성공하는 인생의 비밀 · STAMP TOUR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brown:#4a2c21; --brown2:#6b4334; --cream:#fff8ec; --paper:#fffdf8;
+    --orange:#f4a340; --coral:#e0573f; --gold:#f4ba2f; --ink:#2b211c; --muted:#8a7a70;
+    --line:#ead9c6; --red:#d23b2f; --green:#3b8f5a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:'Gowun Dodum',system-ui,sans-serif; color:var(--ink);
+    background:
+      repeating-linear-gradient(0deg, rgba(244,163,64,.16) 0 24px, transparent 24px 48px),
+      repeating-linear-gradient(90deg, rgba(244,163,64,.16) 0 24px, transparent 24px 48px), #fff3e2;
+    min-height:100vh;
+  }
+  h1,h2,h3,.jua{font-family:'Jua',sans-serif;font-weight:400}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit;font-size:16px}
+  .wrap{max-width:980px;margin:0 auto;padding:24px 16px 48px}
+  .board{
+    background:var(--paper); border-radius:22px; padding:28px 22px 26px; position:relative;
+    box-shadow:0 0 0 10px #efe0c8, 0 12px 30px rgba(74,44,33,.18); margin-top:34px;
+  }
+  .clip{position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:170px;height:46px;
+    background:var(--coral);border-radius:10px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.12)}
+  .clip:after{content:"";position:absolute;left:50%;top:14px;transform:translateX(-50%);width:110px;height:34px;
+    border:7px solid var(--gold);border-top:none;border-radius:0 0 16px 16px}
+  .sub{color:var(--coral);text-align:center;margin:8px 0 2px;font-size:17px}
+  .title{color:var(--brown);text-align:center;margin:0 0 4px;font-size:34px}
+  .title b{color:var(--coral)}
+  .footer{text-align:center;color:var(--muted);font-size:13px;margin-top:22px;letter-spacing:2px}
+  .btn{border:none;border-radius:12px;padding:12px 18px;font-size:16px;background:var(--brown);color:#fff}
+  .btn:hover{background:var(--brown2)}
+  .btn.coral{background:var(--coral)} .btn.light{background:#f1e4d3;color:var(--brown)}
+  .btn.sm{padding:7px 12px;font-size:14px;border-radius:9px}
+  .btn:disabled{opacity:.5;cursor:default}
+  .linkbtn{background:none;border:none;color:var(--muted);text-decoration:underline;font-size:13px}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  .field label{font-size:14px;color:var(--brown2)}
+  .field input,.field select{padding:12px;border:2px solid var(--line);border-radius:12px;background:#fff}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--orange)}
+  .row{display:flex;gap:12px} .row>*{flex:1}
+  .login{max-width:380px;margin:18px auto 0}
+  .err{color:var(--red);font-size:14px;min-height:20px;text-align:center}
+  .demo{background:#fff1c9;border:1px dashed var(--gold);color:#7a5a12;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:12px;text-align:center}
+
+  /* 학생 스탬프판 */
+  .who{text-align:center;margin:6px 0 12px;font-size:18px}
+  .who b{font-family:'Jua';font-size:22px;color:var(--brown)}
+  .count{text-align:center;font-family:'Jua';font-size:20px;color:var(--brown)}
+  .count .big{font-size:44px;color:var(--coral)}
+  .bar{height:16px;background:#f1e4d3;border-radius:99px;overflow:hidden;margin:8px auto 22px;max-width:520px}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--orange),var(--coral));border-radius:99px;transition:width .6s}
+  .stamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px;justify-items:center}
+  .stamp{width:150px;text-align:center}
+  .ring{width:128px;height:128px;margin:0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;border:4px dashed #e3d3bf;color:#c9b6a1;position:relative;background:#fffaf2}
+  .ring .nm{font-family:'Jua';font-size:16px;padding:0 10px;line-height:1.2;word-break:keep-all}
+  .stamp.on .ring{border:5px double var(--red);color:var(--red);background:rgba(210,59,47,.05);transform:rotate(-10deg);
+    animation:pop .45s ease-out}
+  .stamp.on .ring .ok{font-family:'Jua';font-size:22px;letter-spacing:1px}
+  .stamp.on .ring .nm{font-size:13px}
+  .stamp .meta{font-size:12px;color:var(--muted);margin-top:8px;min-height:16px}
+  @keyframes pop{0%{transform:scale(1.6) rotate(-10deg);opacity:0}70%{transform:scale(.92) rotate(-10deg);opacity:1}100%{transform:scale(1) rotate(-10deg)}}
+  .done{margin:24px auto 0;max-width:520px;background:var(--brown);color:#fff;border-radius:16px;padding:18px;text-align:center}
+  .done h3{margin:0 0 6px;font-size:26px;color:var(--gold)}
+
+  /* 교사 */
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 16px}
+  .tab{border:none;background:#f1e4d3;color:var(--brown);padding:9px 14px;border-radius:10px;font-size:15px}
+  .tab.on{background:var(--brown);color:#fff}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}
+  .card{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .card .k{font-size:13px;color:var(--muted)} .card .v{font-family:'Jua';font-size:28px;color:var(--brown)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  .toolbar input{padding:8px 10px;border:2px solid var(--line);border-radius:10px}
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{border-bottom:1px solid #f3e8da;padding:8px 6px;text-align:center;white-space:nowrap}
+  th{background:var(--cream);position:sticky;top:0;font-weight:400;font-family:'Jua';color:var(--brown)}
+  th small{display:block;font-family:'Gowun Dodum';font-size:11px;color:var(--muted)}
+  td.nm{text-align:left;padding-left:10px}
+  .cell{width:30px;height:30px;border-radius:50%;border:2px dashed #e0cdb6;background:#fff;color:transparent;font-size:15px;line-height:26px}
+  .cell.on{border:2px solid var(--red);background:var(--red);color:#fff}
+  .cell:hover{border-color:var(--orange)}
+  .pill{display:inline-block;padding:2px 9px;border-radius:99px;background:#f1e4d3;font-size:13px}
+  .pill.full{background:var(--green);color:#fff}
+  .colbtn{display:block;margin:4px auto 0;font-size:11px;padding:2px 6px;border-radius:6px;border:1px solid var(--line);background:#fff;color:var(--brown2)}
+  textarea{width:100%;min-height:170px;border:2px solid var(--line);border-radius:12px;padding:10px;font-size:15px}
+  .help{font-size:13px;color:var(--muted);line-height:1.6}
+  .cfgrow{display:grid;grid-template-columns:40px 1.3fr 1fr 1.6fr 36px;gap:6px;margin-bottom:6px;align-items:center}
+  .cfgrow input{padding:8px;border:2px solid var(--line);border-radius:9px;width:100%}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--brown);color:#fff;padding:10px 18px;border-radius:12px;
+    font-size:15px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
+  .toast.show{opacity:1}
+  .slips{display:none}
+  @media (max-width:560px){
+    .title{font-size:27px} .stamps{grid-template-columns:repeat(2,1fr);gap:12px}
+    .stamp{width:auto} .ring{width:112px;height:112px}
+    .cfgrow{grid-template-columns:30px 1fr 36px} .cfgrow .d,.cfgrow .ds{grid-column:2/3}
+  }
+  @media print{
+    body{background:#fff} .wrap,.toast{display:none!important}
+    .slips{display:grid!important;grid-template-columns:repeat(3,1fr);gap:0}
+    .slip{border:1px dashed #999;padding:12px 10px;height:46mm;font-size:13px;page-break-inside:avoid}
+    .slip b{font-size:16px} .slip .pin{font-size:26px;letter-spacing:4px;font-weight:bold;margin:6px 0}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="slips" id="slips"></div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+/* =========================================================
+   1) Firebase 설정 — Firebase 콘솔 > 프로젝트 설정 > 웹 앱에서 복사해 붙여넣기
+      apiKey가 "YOUR_API_KEY" 그대로면 '체험(데모) 모드'로 동작합니다.
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyCvgidm2U4BJqZ6sxT9YlNhRrrVhzJNGoQ",
+  authDomain: "rd-grade-stamp-2026.firebaseapp.com",
+  projectId: "rd-grade-stamp-2026",
+  storageBucket: "rd-grade-stamp-2026.firebasestorage.app",
+  messagingSenderId: "53897109098",
+  appId: "1:53897109098:web:654ea8293ce4204b8f3413"
+};
+const APP_TITLE = "성공하는 인생의 비밀";
+const SCHOOL = "우신중학교 3학년부";
+const SALT = "woosin-2026-stamp";          // 바꾸면 기존 PIN이 모두 무효가 되니 처음에만 수정
+const DEMO = firebaseConfig.apiKey === "YOUR_API_KEY";
+const DEMO_TEACHER_PW = "1234";
+
+const DEFAULT_STAMPS = [
+  { id: "s1", name: "고교학점제 워크북", date: "11월", desc: "워크북 완성" },
+  { id: "s2", name: "모의고사 체험", date: "11월", desc: "고1 3월 모의고사 풀이" },
+  { id: "s3", name: "우신고 설명회", date: "11월", desc: "설명회 정리 페이지" },
+  { id: "s4", name: "진학 설계 로드맵", date: "11월", desc: "내 인생 지도 작성" },
+  { id: "s5", name: "미래 협력 역량", date: "11.24", desc: "방탈출·금융교육" },
+  { id: "s6", name: "건강한 나 지키기", date: "11.25~27", desc: "셀프리더십·성교육·도박예방" },
+  { id: "s7", name: "연극 감상문", date: "12.7", desc: "불편한 편의점" },
+  { id: "s8", name: "사제동행 가요제", date: "12.18", desc: "참여·응원" }
+];
+
+/* ---------------- 유틸 ---------------- */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pad2 = n => String(n).padStart(2, "0");
+const keyOf = (cls, num) => `${Number(cls)}-${pad2(Number(num))}`;
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 1800); }
+async function hashId(cls, num, pin) {
+  const raw = `${SALT}|${Number(cls)}|${Number(num)}|${String(pin).trim()}`;
+  if (window.crypto?.subtle) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 40);
+  }
+  let h = 5381; for (const c of raw) h = ((h << 5) + h + c.charCodeAt(0)) >>> 0; return "x" + h.toString(16);
+}
+const randPin = () => String(Math.floor(1000 + Math.random() * 9000));
+function fmtTime(v) {
+  if (!v) return "";
+  const d = typeof v === "number" ? new Date(v) : v.toDate ? v.toDate() : new Date(v);
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
+/* ---------------- 데이터 계층 ---------------- */
+let DB;
+function makeDemoDB() {
+  const L = {
+    get(k, d) { try { return JSON.parse(localStorage.getItem("st_" + k)) ?? d; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem("st_" + k, JSON.stringify(v)); } catch {} }
+  };
+  const subs = new Set(); const fire = () => subs.forEach(f => f());
+  return {
+    async getConfig() { return L.get("config", { stamps: DEFAULT_STAMPS }); },
+    async saveConfig(c) { L.set("config", c); fire(); },
+    watchStudent(h, cb) { const f = () => cb(L.get("students", {})[h] || null); f(); subs.add(f); return () => subs.delete(f); },
+    async login(_e, pw) { if (pw !== DEMO_TEACHER_PW) throw new Error("비밀번호가 다릅니다 (체험 모드: 1234)"); L.set("auth", true); },
+    async logout() { L.set("auth", false); },
+    onAuth(cb) { cb(L.get("auth", false) ? { email: "demo" } : null); },
+    watchAll(cb) { const f = () => cb(Object.entries(L.get("students", {})).map(([id, s]) => ({ id, ...s })), L.get("pins", {})); f(); subs.add(f); return () => subs.delete(f); },
+    async setStamp(ids, sid, on) {
+      const st = L.get("students", {});
+      ids.forEach(id => { if (!st[id]) return; st[id].stamps = st[id].stamps || {}; if (on) st[id].stamps[sid] = Date.now(); else delete st[id].stamps[sid]; });
+      L.set("students", st); fire();
+    },
+    async upsertRoster(rows) {
+      const st = L.get("students", {}), pins = L.get("pins", {});
+      for (const r of rows) {
+        const k = keyOf(r.cls, r.num); let p = pins[k];
+        if (!p) { const pin = randPin(); p = { pin, id: await hashId(r.cls, r.num, pin), cls: r.cls, num: r.num }; }
+        p.name = r.name; pins[k] = p;
+        st[p.id] = { ...(st[p.id] || { stamps: {} }), cls: Number(r.cls), num: Number(r.num), name: r.name };
+      }
+      L.set("students", st); L.set("pins", pins); fire();
+    },
+    async removeStudent(k) {
+      const st = L.get("students", {}), pins = L.get("pins", {});
+      if (pins[k]) { delete st[pins[k].id]; delete pins[k]; }
+      L.set("students", st); L.set("pins", pins); fire();
+    },
+    async resetPin(k) {
+      const st = L.get("students", {}), pins = L.get("pins", {}); const p = pins[k]; if (!p) return;
+      const pin = randPin(), id = await hashId(p.cls, p.num, pin);
+      st[id] = st[p.id]; delete st[p.id]; pins[k] = { ...p, pin, id };
+      L.set("students", st); L.set("pins", pins); fire();
+    }
+  };
+}
+
+async function makeFirebaseDB() {
+  const V = "10.12.2", base = `https://www.gstatic.com/firebasejs/${V}/`;
+  const { initializeApp } = await import(base + "firebase-app.js");
+  const F = await import(base + "firebase-firestore.js");
+  const A = await import(base + "firebase-auth.js");
+  const app = initializeApp(firebaseConfig);
+  const db = F.getFirestore(app), auth = A.getAuth(app);
+  const sdoc = id => F.doc(db, "students", id);
+  return {
+    async getConfig() { const s = await F.getDoc(F.doc(db, "config", "main")); return s.exists() ? s.data() : { stamps: DEFAULT_STAMPS }; },
+    async saveConfig(c) { await F.setDoc(F.doc(db, "config", "main"), c); },
+    watchStudent(h, cb) { return F.onSnapshot(sdoc(h), s => cb(s.exists() ? s.data() : null), () => cb(null)); },
+    async login(e, pw) { await A.signInWithEmailAndPassword(auth, e, pw); },
+    async logout() { await A.signOut(auth); },
+    onAuth(cb) { A.onAuthStateChanged(auth, u => cb(u)); },
+    watchAll(cb) {
+      let students = [], pins = {};
+      const u1 = F.onSnapshot(F.collection(db, "students"), s => { students = s.docs.map(d => ({ id: d.id, ...d.data() })); cb(students, pins); });
+      const u2 = F.onSnapshot(F.collection(db, "pins"), s => { pins = {}; s.docs.forEach(d => pins[d.id] = d.data()); cb(students, pins); });
+      return () => { u1(); u2(); };
+    },
+    async setStamp(ids, sid, on) {
+      for (let i = 0; i < ids.length; i += 400) {
+        const b = F.writeBatch(db);
+        ids.slice(i, i + 400).forEach(id => b.update(sdoc(id), { [`stamps.${sid}`]: on ? F.serverTimestamp() : F.deleteField(), updatedAt: F.serverTimestamp() }));
+        await b.commit();
+      }
+    },
+    async upsertRoster(rows) {
+      const ps = await F.getDocs(F.collection(db, "pins")); const pins = {}; ps.docs.forEach(d => pins[d.id] = d.data());
+      const ops = [];
+      for (const r of rows) {
+        const k = keyOf(r.cls, r.num); let p = pins[k];
+        if (!p) { const pin = randPin(); p = { pin, id: await hashId(r.cls, r.num, pin), cls: Number(r.cls), num: Number(r.num) }; }
+        p.name = r.name;
+        ops.push([F.doc(db, "pins", k), p, false]);
+        ops.push([sdoc(p.id), { cls: Number(r.cls), num: Number(r.num), name: r.name }, true]);
+      }
+      for (let i = 0; i < ops.length; i += 400) {
+        const b = F.writeBatch(db);
+        ops.slice(i, i + 400).forEach(([ref, data, merge]) => merge ? b.set(ref, data, { merge: true }) : b.set(ref, data));
+        await b.commit();
+      }
+    },
+    async removeStudent(k) {
+      const p = await F.getDoc(F.doc(db, "pins", k)); if (!p.exists()) return;
+      const b = F.writeBatch(db); b.delete(sdoc(p.data().id)); b.delete(F.doc(db, "pins", k)); await b.commit();
+    },
+    async resetPin(k) {
+      const ps = await F.getDoc(F.doc(db, "pins", k)); if (!ps.exists()) return; const p = ps.data();
+      const old = await F.getDoc(sdoc(p.id)); const pin = randPin(), id = await hashId(p.cls, p.num, pin);
+      const b = F.writeBatch(db);
+      b.set(sdoc(id), old.exists() ? old.data() : { cls: p.cls, num: p.num, name: p.name, stamps: {} });
+      b.delete(sdoc(p.id)); b.set(F.doc(db, "pins", k), { ...p, pin, id }); await b.commit();
+    }
+  };
+}
+
+/* ---------------- 화면 ---------------- */
+const app = $("#app");
+let CFG = { stamps: DEFAULT_STAMPS };
+let USER = null;
+let unsub = null;
+const stop = () => { if (unsub) { unsub(); unsub = null; } };
+
+function frame(inner) {
+  return `<div class="board"><div class="clip"></div>
+    <p class="sub jua">발자국마다 성공 경험을! STAMP TOUR</p>
+    <h1 class="title">${esc(CFG.title || APP_TITLE)}</h1>
+    ${inner}
+    <div class="footer">WOOSHIN MIDDLE SCHOOL</div></div>`;
+}
+
+function showStudentLogin(msg = "") {
+  stop();
+  app.innerHTML = frame(`
+    ${DEMO ? `<div class="demo">체험 모드입니다 · 교사용에서 명단을 넣으면 바로 시험해 볼 수 있어요 (교사 비밀번호 1234)</div>` : ""}
+    <p class="who">반, 번호, 개인 PIN을 입력하고 내 스탬프를 확인하세요!</p>
+    <form class="login" id="sf" autocomplete="off">
+      <div class="row">
+        <div class="field"><label>반</label><select id="cls">${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}">${n}반</option>`).join("")}</select></div>
+        <div class="field"><label>번호</label><input id="num" type="number" inputmode="numeric" min="1" max="40" placeholder="예: 7" required></div>
+      </div>
+      <div class="field"><label>개인 PIN (4자리)</label><input id="pin" type="password" inputmode="numeric" maxlength="6" placeholder="선생님께 받은 번호" required></div>
+      <div class="err" id="err">${esc(msg)}</div>
+      <button class="btn coral" style="width:100%">내 스탬프 보기</button>
+    </form>
+    <p style="text-align:center;margin-top:18px"><button class="linkbtn" id="tlink">교사용</button></p>`);
+  $("#sf").onsubmit = async e => {
+    e.preventDefault();
+    const cls = $("#cls").value, num = $("#num").value, pin = $("#pin").value;
+    $("#err").textContent = "확인 중…";
+    const h = await hashId(cls, num, pin);
+    let first = true;
+    unsub = DB.watchStudent(h, s => {
+      if (!s) { if (first) { stop(); $("#err").textContent = "반·번호·PIN을 다시 확인하세요."; } return; }
+      first = false; renderBoard(s);
+    });
+  };
+  $("#tlink").onclick = showTeacher;
+}
+
+function renderBoard(s) {
+  const list = CFG.stamps; const got = list.filter(x => s.stamps && s.stamps[x.id]).length;
+  const pct = list.length ? Math.round(got / list.length * 100) : 0;
+  app.innerHTML = frame(`
+    <p class="who">3학년 ${esc(s.cls)}반 ${esc(s.num)}번 <b>${esc(s.name)}</b></p>
+    <div class="count"><span class="big">${got}</span> / ${list.length} 개 달성</div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    <div class="stamps">${list.map(x => {
+      const on = s.stamps && s.stamps[x.id];
+      return `<div class="stamp ${on ? "on" : ""}"><div class="ring">${on ? `<div class="ok">SUCCESS</div>` : ""}<div class="nm">${esc(x.name)}</div></div>
+        <div class="meta">${on ? `✔ ${fmtTime(on)} 획득` : esc([x.date, x.desc].filter(Boolean).join(" · "))}</div></div>`;
+    }).join("")}</div>
+    ${got === list.length && list.length ? `<div class="done"><h3>스탬프 투어를 완성한 당신!</h3>고등학교를 향한 그 발걸음 성공적! 사제동행 가요제 날 시상합니다.</div>` : ""}
+    <p style="text-align:center;margin-top:22px"><button class="btn light sm" id="out">나가기</button></p>`);
+  $("#out").onclick = () => showStudentLogin();
+}
+
+/* ---------- 교사 ---------- */
+let T = { tab: "status", cls: "all", q: "", students: [], pins: {} };
+
+function showTeacher() {
+  stop();
+  if (USER) teacherHome(); else teacherLogin();
+}
+function teacherLogin(msg = "") {
+  stop();
+  app.innerHTML = frame(`
+    <p class="who">교사용 관리 화면</p>
+    <form class="login" id="tf">
+      ${DEMO ? `<div class="demo">체험 모드 비밀번호: 1234</div>` : `<div class="field"><label>교사 이메일</label><input id="em" type="email" required></div>`}
+      <div class="field"><label>비밀번호</label><input id="pw" type="password" required></div>
+      <div class="err" id="err">${esc(msg)}</div>
+      <button class="btn" style="width:100%">로그인</button>
+    </form>
+    <p style="text-align:center;margin-top:18px"><button class="linkbtn" id="back">학생 화면으로</button></p>`);
+  $("#tf").onsubmit = async e => {
+    e.preventDefault();
+    try { await DB.login(DEMO ? "" : $("#em").value, $("#pw").value); USER = USER || {}; teacherHome(); }
+    catch (er) { $("#err").textContent = DEMO ? er.message : "로그인 실패: 이메일·비밀번호를 확인하세요."; }
+  };
+  $("#back").onclick = () => showStudentLogin();
+}
+
+function teacherHome() {
+  stop();
+  app.innerHTML = `<div class="board"><div class="clip"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+      <h2 class="jua" style="margin:6px 0;color:var(--brown)">스탬프 투어 관리</h2>
+      <div><button class="btn light sm" id="lo">로그아웃</button> <button class="btn light sm" id="sv">학생 화면</button></div>
+    </div>
+    ${DEMO ? `<div class="demo">체험 모드: 데이터는 이 브라우저에만 저장됩니다.</div>` : ""}
+    <div class="tabs">
+      <button class="tab" data-t="status">스탬프 현황</button>
+      <button class="tab" data-t="roster">명단 · PIN</button>
+      <button class="tab" data-t="config">스탬프 항목</button>
+    </div>
+    <div id="tv"></div>
+    <div class="footer">WOOSHIN MIDDLE SCHOOL</div></div>`;
+  $("#lo").onclick = async () => { await DB.logout(); USER = null; showStudentLogin(); };
+  $("#sv").onclick = () => showStudentLogin();
+  app.querySelectorAll(".tab").forEach(b => b.onclick = () => { T.tab = b.dataset.t; drawTeacher(); });
+  unsub = DB.watchAll((st, pins) => { T.students = st; T.pins = pins; drawTeacher(); });
+}
+
+function drawTeacher() {
+  app.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.t === T.tab));
+  const v = $("#tv"); if (!v) return;
+  if (T.tab === "status") drawStatus(v);
+  else if (T.tab === "roster") drawRoster(v);
+  else drawConfig(v);
+}
+
+function drawStatus(v) {
+  const list = CFG.stamps;
+  const classes = [...new Set(T.students.map(s => s.cls))].sort((a, b) => a - b);
+  let rows = T.students.filter(s => (T.cls === "all" || s.cls == T.cls) && (!T.q || (s.name || "").includes(T.q)))
+    .sort((a, b) => a.cls - b.cls || a.num - b.num);
+  const cnt = s => list.filter(x => s.stamps && s.stamps[x.id]).length;
+  const n = rows.length, full = rows.filter(s => cnt(s) === list.length && list.length).length;
+  const avg = n ? (rows.reduce((a, s) => a + cnt(s), 0) / n).toFixed(1) : 0;
+  const focusPos = document.activeElement && document.activeElement.id === "q" ? document.activeElement.selectionStart : null;
+  v.innerHTML = `
+    <div class="cards">
+      <div class="card"><div class="k">학생 수</div><div class="v">${n}</div></div>
+      <div class="card"><div class="k">완주 (${list.length}개)</div><div class="v">${full}</div></div>
+      <div class="card"><div class="k">평균 스탬프</div><div class="v">${avg}</div></div>
+    </div>
+    <div class="toolbar">
+      <button class="tab ${T.cls === "all" ? "on" : ""}" data-c="all">전체</button>
+      ${classes.map(c => `<button class="tab ${T.cls == c ? "on" : ""}" data-c="${c}">${c}반</button>`).join("")}
+      <input id="q" placeholder="이름 검색" value="${esc(T.q)}" style="margin-left:auto">
+      <button class="btn light sm" id="csv">CSV 저장</button>
+    </div>
+    ${n ? `<div class="tblwrap"><table><thead><tr><th>반</th><th>번호</th><th>이름</th>
+      ${list.map(x => `<th>${esc(x.name)}<small>${esc(x.date || "")}</small>${T.cls !== "all" ? `<button class="colbtn" data-all="${x.id}">반 전체 ✔</button>` : ""}</th>`).join("")}
+      <th>개수</th></tr></thead><tbody>
+      ${rows.map(s => `<tr><td>${s.cls}</td><td>${s.num}</td><td class="nm">${esc(s.name)}</td>
+        ${list.map(x => { const on = s.stamps && s.stamps[x.id]; return `<td><button class="cell ${on ? "on" : ""}" data-id="${s.id}" data-s="${x.id}" title="${on ? fmtTime(on) + " 획득 · 클릭하면 취소" : "클릭하면 스탬프"}">✔</button></td>`; }).join("")}
+        <td><span class="pill ${cnt(s) === list.length ? "full" : ""}">${cnt(s)}</span></td></tr>`).join("")}
+      </tbody></table></div>` : `<p class="help">아직 학생 명단이 없습니다. <b>명단 · PIN</b> 탭에서 명단을 붙여넣어 주세요.</p>`}`;
+  v.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { T.cls = b.dataset.c; drawStatus(v); });
+  const q = $("#q"); q.oninput = () => { T.q = q.value.trim(); drawStatus(v); };
+  if (focusPos !== null) { const nq = $("#q"); nq.focus(); nq.setSelectionRange(focusPos, focusPos); }
+  v.querySelectorAll(".cell").forEach(b => b.onclick = async () => {
+    const on = !b.classList.contains("on"); b.classList.toggle("on", on);
+    try { await DB.setStamp([b.dataset.id], b.dataset.s, on); } catch (e) { toast("저장 실패: 권한을 확인하세요"); }
+  });
+  v.querySelectorAll("[data-all]").forEach(b => b.onclick = async () => {
+    const x = list.find(i => i.id === b.dataset.all);
+    const ids = rows.filter(s => !(s.stamps && s.stamps[x.id])).map(s => s.id);
+    if (!ids.length) return toast("이미 모두 찍혀 있어요");
+    if (!confirm(`${T.cls}반 ${ids.length}명에게 '${x.name}' 스탬프를 찍을까요?`)) return;
+    await DB.setStamp(ids, x.id, true); toast("완료!");
+  });
+  $("#csv").onclick = () => {
+    const head = ["반", "번호", "이름", ...list.map(x => x.name), "개수"];
+    const body = rows.map(s => [s.cls, s.num, s.name, ...list.map(x => s.stamps && s.stamps[x.id] ? "O" : ""), cnt(s)]);
+    download("스탬프현황.csv", [head, ...body]);
+  };
+}
+
+function drawRoster(v) {
+  const pins = Object.entries(T.pins).map(([k, p]) => ({ k, ...p })).sort((a, b) => a.cls - b.cls || a.num - b.num);
+  v.innerHTML = `
+    <h3 class="jua" style="color:var(--brown);margin:4px 0">① 명단 붙여넣기</h3>
+    <p class="help">엑셀에서 <b>반 · 번호 · 이름</b> 세 열을 복사해 붙여넣거나, 한 줄에 <code>1,3,홍길동</code>처럼 입력하세요.<br>
+      처음 넣는 학생은 4자리 PIN이 자동으로 만들어지고, 이미 있는 학생은 PIN과 스탬프가 그대로 유지됩니다(이름만 갱신).</p>
+    <textarea id="ta" placeholder="1	1	김가람&#10;1	2	이나래&#10;2	1	박다온"></textarea>
+    <div class="toolbar" style="margin-top:8px"><button class="btn coral" id="imp">명단 등록</button><span class="help" id="imsg"></span></div>
+    <h3 class="jua" style="color:var(--brown);margin:22px 0 4px">② 학생 PIN 목록 (${pins.length}명)</h3>
+    <div class="toolbar">
+      <button class="btn sm" id="pr">PIN 쪽지 인쇄</button>
+      <button class="btn light sm" id="pcsv">PIN CSV 저장</button>
+      <span class="help">쪽지를 잘라서 학생에게 나눠 주세요. PIN은 교사만 볼 수 있습니다.</span>
+    </div>
+    ${pins.length ? `<div class="tblwrap"><table><thead><tr><th>반</th><th>번호</th><th>이름</th><th>PIN</th><th>관리</th></tr></thead><tbody>
+      ${pins.map(p => `<tr><td>${p.cls}</td><td>${p.num}</td><td class="nm">${esc(p.name)}</td><td class="jua" style="font-size:17px;letter-spacing:2px">${esc(p.pin)}</td>
+        <td><button class="btn light sm" data-rp="${p.k}">PIN 재발급</button> <button class="btn light sm" data-rm="${p.k}">삭제</button></td></tr>`).join("")}
+      </tbody></table></div>` : ""}`;
+  $("#imp").onclick = async () => {
+    const rows = $("#ta").value.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => l.split(/\t|,/).map(x => x.trim()))
+      .filter(a => a.length >= 3 && /^\d+$/.test(a[0]) && /^\d+$/.test(a[1]) && a[2]).map(a => ({ cls: Number(a[0]), num: Number(a[1]), name: a[2] }));
+    if (!rows.length) return ($("#imsg").textContent = "형식을 확인하세요: 반, 번호, 이름");
+    $("#imp").disabled = true; $("#imsg").textContent = "등록 중…";
+    try { await DB.upsertRoster(rows); $("#ta").value = ""; toast(`${rows.length}명 등록 완료`); }
+    catch (e) { $("#imsg").textContent = "등록 실패: 교사 로그인·보안 규칙을 확인하세요."; }
+    $("#imp").disabled = false;
+  };
+  v.querySelectorAll("[data-rp]").forEach(b => b.onclick = async () => { if (confirm("새 PIN을 발급할까요? 스탬프는 유지됩니다.")) { await DB.resetPin(b.dataset.rp); toast("재발급 완료"); } });
+  v.querySelectorAll("[data-rm]").forEach(b => b.onclick = async () => { if (confirm("이 학생과 스탬프 기록을 삭제할까요?")) { await DB.removeStudent(b.dataset.rm); toast("삭제했습니다"); } });
+  $("#pcsv").onclick = () => download("학생PIN.csv", [["반", "번호", "이름", "PIN"], ...pins.map(p => [p.cls, p.num, p.name, p.pin])]);
+  $("#pr").onclick = () => {
+    const url = location.href.split("#")[0];
+    $("#slips").innerHTML = pins.map(p => `<div class="slip"><div>STAMP TOUR · ${esc(CFG.title || APP_TITLE)}</div>
+      <b>3학년 ${p.cls}반 ${p.num}번 ${esc(p.name)}</b><div class="pin">PIN ${esc(p.pin)}</div><div style="font-size:11px;word-break:break-all">${esc(url)}</div></div>`).join("");
+    window.print();
+  };
+}
+
+function drawConfig(v) {
+  let items = CFG.stamps.map(x => ({ ...x }));
+  const paint = () => {
+    v.innerHTML = `
+      <p class="help">학생 화면에 보이는 스탬프 칸입니다. 이름·시기·설명을 고치고 <b>저장</b>을 누르세요. 항목을 지우면 그 항목의 스탬프는 화면에서 사라집니다.</p>
+      <div class="field"><label>화면 제목</label><input id="tt" value="${esc(CFG.title || APP_TITLE)}"></div>
+      <div class="cfgrow help"><span>#</span><span>스탬프 이름</span><span class="d">시기</span><span class="ds">설명</span><span></span></div>
+      ${items.map((x, i) => `<div class="cfgrow"><span class="jua">${i + 1}</span>
+        <input data-i="${i}" data-f="name" value="${esc(x.name)}"><input class="d" data-i="${i}" data-f="date" value="${esc(x.date || "")}">
+        <input class="ds" data-i="${i}" data-f="desc" value="${esc(x.desc || "")}"><button class="btn light sm" data-del="${i}">✕</button></div>`).join("")}
+      <div class="toolbar" style="margin-top:10px">
+        <button class="btn light sm" id="add">+ 항목 추가</button>
+        <button class="btn coral" id="save" style="margin-left:auto">저장</button>
+      </div>`;
+    v.querySelectorAll("input[data-i]").forEach(inp => inp.oninput = () => { items[inp.dataset.i][inp.dataset.f] = inp.value; });
+    v.querySelectorAll("[data-del]").forEach(b => b.onclick = () => { items.splice(Number(b.dataset.del), 1); paint(); });
+    $("#add").onclick = () => {
+      if (items.length >= 12) return toast("최대 12개까지 가능해요");
+      let n = 1; while (items.some(x => x.id === "s" + n) || CFG.stamps.some(x => x.id === "s" + n)) n++;
+      items.push({ id: "s" + n, name: "새 활동", date: "", desc: "" }); paint();
+    };
+    $("#save").onclick = async () => {
+      const cfg = { title: $("#tt").value.trim() || APP_TITLE, stamps: items.filter(x => x.name.trim()) };
+      try { await DB.saveConfig(cfg); CFG = cfg; toast("저장했습니다"); } catch (e) { toast("저장 실패: 권한을 확인하세요"); }
+    };
+  };
+  paint();
+}
+
+function download(name, rows) {
+  const csv = "﻿" + rows.map(r => r.map(c => `"${String(c ?? "").replace(/"/g, '""')}"`).join(",")).join("\r\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = name; a.click();
+}
+
+/* ---------------- 시작 ---------------- */
+(async () => {
+  try {
+    DB = DEMO ? makeDemoDB() : await makeFirebaseDB();
+    CFG = await DB.getConfig();
+    if (!CFG.stamps || !CFG.stamps.length) CFG.stamps = DEFAULT_STAMPS;
+    await new Promise(res => { let done = false; DB.onAuth(u => { USER = u; if (!done) { done = true; res(); } }); setTimeout(() => { if (!done) { done = true; res(); } }, 2500); });
+  } catch (e) {
+    console.error(e);
+    app.innerHTML = frame(`<p class="err">연결에 실패했습니다. Firebase 설정값을 확인하세요.</p>`);
+    return;
+  }
+  location.hash === "#teacher" ? showTeacher() : showStudentLogin();
+})();
+</script>
+</body>
+</html>
